@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Company>Minty Labs &amp; Gerber Childrenswear LLC</Company>
+    <Copyright>Minty Labs &amp; Gerber Childrenswear LLC</Copyright>
+    <Title>PrinterManager</Title>
+    <Authors>LCromer</Authors>
+    <PackageProjectUrl>https://github.com/lcromer97/PrinterManager</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/lcromer97/PrinterManager</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="9.0.9" />
+  </ItemGroup>
+
+</Project>
