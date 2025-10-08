@@ -87,20 +87,32 @@ internal static class PrinterHelper {
     /// <param name="oldName">The current name of the printer to be renamed. This value cannot be null or empty.</param>
     /// <param name="newName">The new name to assign to the printer. This value cannot be null or empty.</param>
     /// <returns><see langword="true"/> if the printer was successfully renamed; otherwise, <see langword="false"/>.</returns>
-    public static bool RenamePrinter(string oldName, string newName) {
+    internal static bool RenamePrinter(string oldName, string newName) {
         try {
-            string query = $"SELECT * FROM Win32_Printer WHERE Name = '{oldName}'";
+            string safeOldName = oldName.Replace("'", "''");
+            string query = $"SELECT * FROM Win32_Printer WHERE Name = '{safeOldName}'";
+
             using var searcher = new ManagementObjectSearcher(query);
             foreach (ManagementObject printer in searcher.Get().Cast<ManagementObject>()) {
-                var result = printer.InvokeMethod("Rename", [ newName ]);
-                return (uint)result == 0; // 0 = success
+                var result = printer.InvokeMethod("Rename", [newName]);
+                if (result is uint code && code == 0)
+                    return true;
             }
+
+            // Fallback: use PrintUIEntry
+            string args = $"/Xs /n \"{oldName}\" Name \"{newName}\"";
+            var psi = new ProcessStartInfo("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
+                Verb = "runas",
+                UseShellExecute = true,
+                CreateNoWindow = true
+            };
+
+            Process.Start(psi)?.WaitForExit();
+            return true;
         }
         catch {
             return false;
         }
-
-        return false;
     }
 
     /// <summary>
@@ -140,16 +152,27 @@ internal static class PrinterHelper {
     /// <exception cref="ArgumentException">Thrown if no printer is found with the specified <paramref name="portName"/>.</exception>
     internal static void DeletePrinter(string portName) {
         var printers = GetPrinters();
-        var printer = printers.FirstOrDefault(p => p.PortName == portName) ?? throw new ArgumentException("Printer not found.", nameof(portName));
-        string args = $"/dl /n \"{printer.DisplayName}\" /p \"{portName}\"";
-        var psi = new ProcessStartInfo("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
+        var printer = printers.FirstOrDefault(p => p.PortName == portName)
+                      ?? throw new ArgumentException("Printer not found.", nameof(portName));
+
+        string argsPrinter = $"/dl /n \"{printer.DisplayName}\"";
+        string argsPort = $"/dl /r \"{portName}\"";
+
+        var psiPrinter = new ProcessStartInfo("rundll32.exe", $"printui.dll,PrintUIEntry {argsPrinter}") {
             Verb = "runas", // Run as admin
             CreateNoWindow = true,
             UseShellExecute = true
         };
 
-        Process.Start(psi)?.WaitForExit();
+        var psiPort = new ProcessStartInfo("rundll32.exe", $"printui.dll,PrintUIEntry {argsPort}") {
+            Verb = "runas", // Run as admin
+            CreateNoWindow = true,
+            UseShellExecute = true
+        };
 
-        MessageBox.Show($"{printer.DisplayName} on Port {printer.PortName} has been removed.");
+        Process.Start(psiPrinter)?.WaitForExit();
+        Process.Start(psiPort)?.WaitForExit();
+
+        MessageBox.Show($"'{printer.DisplayName}' on Port '{printer.PortName}' has been removed.");
     }
 }

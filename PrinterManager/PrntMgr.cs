@@ -95,11 +95,11 @@ public partial class PrinterManagerApp : Form {
             return;
         }
 
-        // get printer
         var printers = PrinterHelper.GetPrinters();
         var selectedPrinter = printers.FirstOrDefault(p => p.PortName == printerInfo.PortName);
         try {
             NativeCalls.SetDefaultPrinter(selectedPrinter?.DisplayName ?? string.Empty);
+            LoadPrinterTableData();
         }
         catch (Exception ex) {
             MessageBox.Show($"Failed to set default printer:\n{ex.Message}");
@@ -117,10 +117,9 @@ public partial class PrinterManagerApp : Form {
     /// <param name="sender">The source of the event, typically the "Add Printer" button.</param>
     /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     private void addPrinterBtn_Click(object sender, EventArgs e) {
-        // MessageBox.Show("This will show a dialog box to input information");
         var result = InputDialog.Show("Add Printer", [..PrinterHelper.GetInstalledPrinterDrivers().Select(d => d.Name ?? "Unknown Driver")]);
         if (result is null) {
-            MessageBox.Show("Invalid or no data was entered, aborting.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("Invalid or no data was entered, aborting.", "Add Printer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
 
@@ -130,18 +129,19 @@ public partial class PrinterManagerApp : Form {
         var dropdown = result.Value.dropdown;
 
         if (string.IsNullOrWhiteSpace(portname) || string.IsNullOrWhiteSpace(displayname) || string.IsNullOrWhiteSpace(dropdown)) {
-            MessageBox.Show("Invalid or no data was entered, aborting.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("Invalid or no data was entered, aborting.", "Add Printer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
 
         var driverInfo = PrinterHelper.GetInstalledPrinterDrivers().FirstOrDefault(d => d.Name == dropdown);
         var currentprinters = PrinterHelper.GetPrinters();
         if (portname == currentprinters.FirstOrDefault(p => p.PortName == portname)?.PortName) {
-            MessageBox.Show("A printer with that port name already exists, aborting.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("A printer with that port name already exists, aborting.", "Add Printer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
 
         PrinterHelper.AddPrinter(displayname, portname, driverInfo!, checkbox ?? false);
+        LoadPrinterTableData();
     }
 
     /// <summary>
@@ -161,14 +161,15 @@ public partial class PrinterManagerApp : Form {
             return;
         }
 
-        // MessageBox.Show("This will show a confirmation message asking if you really want to remove the selected printer");
-        var result = MessageBox.Show($"Are you sure you want to remove {printerInfo.DisplayName} from this computer?",
-                "Confirm",
+        var result = MessageBox.Show($"Are you sure you want to remove '{printerInfo.DisplayName}' from this computer?",
+                "Remove Printer",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
-        if (result == DialogResult.Yes && !string.IsNullOrWhiteSpace(printerInfo.PortName))
+        if (result == DialogResult.Yes && !string.IsNullOrWhiteSpace(printerInfo.PortName)) {
             PrinterHelper.DeletePrinter(printerInfo.PortName);
+            LoadPrinterTableData();
+        }
         else return;
     }
 
@@ -189,7 +190,6 @@ public partial class PrinterManagerApp : Form {
             return;
         }
 
-        // MessageBox.Show("This will show a dialog box to edit the DisplayName of the selected printer");
         var newName = InputDialog.Show("Rename Printer", "Enter new printer name:");
 
         if (string.IsNullOrWhiteSpace(printerInfo.PortName) || string.IsNullOrWhiteSpace(newName))
@@ -197,11 +197,18 @@ public partial class PrinterManagerApp : Form {
 
         var currentprinters = PrinterHelper.GetPrinters();
         if (newName == currentprinters.FirstOrDefault(p => p.DisplayName == newName)?.DisplayName) {
-            MessageBox.Show("A printer with that display name already exists, aborting.", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("A printer with that display name already exists, aborting.", "Rename Printer", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
 
-        PrinterHelper.RenamePrinter(printerInfo.PortName, newName);
+        var success = PrinterHelper.RenamePrinter(printerInfo.PortName, newName);
+        if (success) {
+            MessageBox.Show("Printer renamed successfully.");
+            LoadPrinterTableData();
+        }
+        else {
+            MessageBox.Show("Failed to rename printer.", "Rename Printer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     /// <summary>
@@ -224,8 +231,13 @@ public partial class PrinterManagerApp : Form {
         if (string.IsNullOrWhiteSpace(newPort))
             return;
 
-        // TODO: Change port logic here - requires admin
-        var args = $"/Xs /n \"{printerInfo.DisplayName}\" PortName: \"{newPort}\"";
+        var currentprinters = PrinterHelper.GetPrinters();
+        if (newPort == currentprinters.FirstOrDefault(p => p.PortName == newPort)?.PortName) {
+            MessageBox.Show("A printer with that port already exists, aborting.", "Change Printer Port", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var args = $"/Xs /n \"{printerInfo.DisplayName}\" PortName \"{newPort}\"";
 
         ProcessStartInfo psi = new ("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
             Verb = "runas",
@@ -234,6 +246,9 @@ public partial class PrinterManagerApp : Form {
         };
 
         Process.Start(psi)?.WaitForExit();
+        LoadPrinterTableData();
+
+        MessageBox.Show($"Port for '{printerInfo.DisplayName}' changed to '{newPort}'.");
     }
 
     /// <summary>
