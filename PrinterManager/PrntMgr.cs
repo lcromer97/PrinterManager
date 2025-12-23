@@ -107,40 +107,28 @@ public partial class PrinterManagerApp : Form {
     }
 
     /// <summary>
-    /// Handles the click event for the "Add Printer" button, allowing the user to add a new printer by providing
-    /// necessary details.
+    /// Handles the Click event of the Add Printer button by launching the system Add Printer wizard and refreshing the
+    /// printer list.
     /// </summary>
-    /// <remarks>This method displays a dialog box for the user to input printer details, including the port
-    /// name, display name, and driver selection. If the input is invalid or incomplete, the operation is aborted, and
-    /// an error message is displayed. The method ensures that the port name is unique among existing printers before
-    /// adding the new printer.</remarks>
-    /// <param name="sender">The source of the event, typically the "Add Printer" button.</param>
-    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
+    /// <remarks>If no printer is selected in the printer list, the method displays a message prompting the
+    /// user to select a printer before proceeding.</remarks>
+    /// <param name="sender">The source of the event, typically the Add Printer button.</param>
+    /// <param name="e">An EventArgs object that contains the event data.</param>
     private void addPrinterBtn_Click(object sender, EventArgs e) {
-        var result = InputDialog.Show("Add Printer", [..PrinterHelper.GetInstalledPrinterDrivers().Select(d => d.Name ?? "Unknown Driver")]);
-        if (result is null) {
-            MessageBox.Show("Invalid or no data was entered, aborting.", "Add Printer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        var selectedRow = printerDataGrid.CurrentRow;
+
+        if (selectedRow?.Tag is not PrinterInfo printerInfo) {
+            MessageBox.Show("Please select a printer first.");
             return;
         }
 
-        var checkbox = result.Value.checkbox;
-        var portname = result.Value.text1;
-        var displayname = result.Value.text2;
-        var dropdown = result.Value.dropdown;
+        ProcessStartInfo psi = new("rundll32.exe", $"printui.dll,PrintUIEntry /il") {
+            Verb = "runas",
+            UseShellExecute = true,
+            CreateNoWindow = true
+        };
 
-        if (string.IsNullOrWhiteSpace(portname) || string.IsNullOrWhiteSpace(displayname) || string.IsNullOrWhiteSpace(dropdown)) {
-            MessageBox.Show("Invalid or no data was entered, aborting.", "Add Printer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
-
-        var driverInfo = PrinterHelper.GetInstalledPrinterDrivers().FirstOrDefault(d => d.Name == dropdown);
-        var currentprinters = PrinterHelper.GetPrinters();
-        if (portname == currentprinters.FirstOrDefault(p => p.PortName == portname)?.PortName) {
-            MessageBox.Show("A printer with that port name already exists, aborting.", "Add Printer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
-        }
-
-        PrinterHelper.AddPrinter(displayname, portname, driverInfo!, checkbox ?? false);
+        Process.Start(psi)?.WaitForExit();
         LoadPrinterTableData();
     }
 
