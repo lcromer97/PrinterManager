@@ -64,9 +64,10 @@
             // 
             // propertiesButton
             // 
-            propertiesButton.Location = new Point(557, 22);
+            propertiesButton.AutoSize = true;
+            propertiesButton.Location = new Point(585, 21);
             propertiesButton.Name = "propertiesButton";
-            propertiesButton.Size = new Size(114, 23);
+            propertiesButton.Size = new Size(120, 25);
             propertiesButton.TabIndex = 6;
             propertiesButton.Text = "Open Properties";
             propertiesButton.UseVisualStyleBackColor = true;
@@ -74,9 +75,10 @@
             // 
             // openPrintQueueBtn
             // 
-            openPrintQueueBtn.Location = new Point(426, 22);
+            openPrintQueueBtn.AutoSize = true;
+            openPrintQueueBtn.Location = new Point(447, 22);
             openPrintQueueBtn.Name = "openPrintQueueBtn";
-            openPrintQueueBtn.Size = new Size(125, 23);
+            openPrintQueueBtn.Size = new Size(132, 25);
             openPrintQueueBtn.TabIndex = 5;
             openPrintQueueBtn.Text = "Open Print Queue";
             openPrintQueueBtn.UseVisualStyleBackColor = true;
@@ -94,9 +96,10 @@
             // 
             // changePortBtn
             // 
+            changePortBtn.AutoSize = true;
             changePortBtn.Location = new Point(249, 22);
             changePortBtn.Name = "changePortBtn";
-            changePortBtn.Size = new Size(90, 23);
+            changePortBtn.Size = new Size(98, 25);
             changePortBtn.TabIndex = 3;
             changePortBtn.Text = "Change Port";
             changePortBtn.UseVisualStyleBackColor = true;
@@ -104,9 +107,10 @@
             // 
             // renamePrinterBtn
             // 
+            renamePrinterBtn.AutoSize = true;
             renamePrinterBtn.Location = new Point(168, 22);
             renamePrinterBtn.Name = "renamePrinterBtn";
-            renamePrinterBtn.Size = new Size(75, 23);
+            renamePrinterBtn.Size = new Size(75, 25);
             renamePrinterBtn.TabIndex = 2;
             renamePrinterBtn.Text = "Rename";
             renamePrinterBtn.UseVisualStyleBackColor = true;
@@ -114,9 +118,10 @@
             // 
             // removePrinterBtn
             // 
+            removePrinterBtn.AutoSize = true;
             removePrinterBtn.Location = new Point(87, 22);
             removePrinterBtn.Name = "removePrinterBtn";
-            removePrinterBtn.Size = new Size(75, 23);
+            removePrinterBtn.Size = new Size(75, 25);
             removePrinterBtn.TabIndex = 1;
             removePrinterBtn.Text = "Remove";
             removePrinterBtn.UseVisualStyleBackColor = true;
@@ -124,9 +129,10 @@
             // 
             // addPrinterBtn
             // 
+            addPrinterBtn.AutoSize = true;
             addPrinterBtn.Location = new Point(6, 22);
             addPrinterBtn.Name = "addPrinterBtn";
-            addPrinterBtn.Size = new Size(75, 23);
+            addPrinterBtn.Size = new Size(75, 25);
             addPrinterBtn.TabIndex = 0;
             addPrinterBtn.Text = "Add";
             addPrinterBtn.UseVisualStyleBackColor = true;
@@ -134,9 +140,10 @@
             // 
             // setDefaultBtn
             // 
-            setDefaultBtn.Location = new Point(345, 22);
+            setDefaultBtn.AutoSize = true;
+            setDefaultBtn.Location = new Point(351, 22);
             setDefaultBtn.Name = "setDefaultBtn";
-            setDefaultBtn.Size = new Size(75, 23);
+            setDefaultBtn.Size = new Size(90, 25);
             setDefaultBtn.TabIndex = 4;
             setDefaultBtn.Text = "Set Default";
             setDefaultBtn.UseVisualStyleBackColor = true;
@@ -196,6 +203,7 @@
             Name = "PrinterManagerApp";
             Text = "Printer Manager";
             actionsGrp.ResumeLayout(false);
+            actionsGrp.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)printerDataGrid).EndInit();
             ResumeLayout(false);
         }
