@@ -1,5 +1,5 @@
-using System.Data;
 using System.Diagnostics;
+using System.ServiceProcess;
 using PrinterManager.PrinterData;
 
 namespace PrinterManager;
@@ -13,6 +13,15 @@ public partial class PrinterManagerApp : Form {
         printerDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         printerDataGrid.MultiSelect = false;
         PrinterDataGrid = printerDataGrid;
+
+        if (IsDeposcoPrintServer()) {
+            DeposcoStatus.Visible = true;
+            DeposcoStatusTitle.Visible = true;
+            var isServiceRunning = IsDeposcoPrintClientServiceRunning();
+            DeposcoStatus.Text = isServiceRunning ? "RUNNING" : "STOPPED";
+            DeposcoStatus.ForeColor = isServiceRunning ? Color.Green : Color.Red;
+        }
+
         LoadPrinterTableData();
     }
 
@@ -299,3 +308,23 @@ public partial class PrinterManagerApp : Form {
     }
 }
 
+    /// <summary>
+    /// Determines whether the current machine is identified as the Deposco print server.
+    /// </summary>
+    /// <returns>Returns <see langword="true"/> if the current machine name matches "VSJFCDPS1"; otherwise, <see
+    /// langword="false"/>.</returns>
+    private static bool IsDeposcoPrintServer() => Environment.MachineName.Equals("VSJFCDPS1");
+
+    /// <summary>
+    /// Determines whether the Deposco Print Client service is currently running on the local machine.
+    /// </summary>
+    /// <remarks>This method checks for a service whose name starts with "DeposcoPrintClientx64" and verifies
+    /// that its status is Running. Use this method to confirm that the print client service is available before
+    /// attempting operations that require it.</remarks>
+    /// <returns>true if the Deposco Print Client service is running; otherwise, false.</returns>
+    private bool IsDeposcoPrintClientServiceRunning() {
+        var serviceName = "DeposcoPrintClientx64";
+        var service = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName.StartsWith(serviceName));
+        return service != null && service.Status == ServiceControllerStatus.Running;
+    }
+}

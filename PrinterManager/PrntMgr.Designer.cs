@@ -41,6 +41,8 @@
             portCol = new DataGridViewTextBoxColumn();
             displayNameCol = new DataGridViewTextBoxColumn();
             driverNameCol = new DataGridViewTextBoxColumn();
+            DeposcoStatusTitle = new Label();
+            DeposcoStatus = new Label();
             actionsGrp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)printerDataGrid).BeginInit();
             SuspendLayout();
@@ -192,11 +194,33 @@
             driverNameCol.Name = "driverNameCol";
             driverNameCol.ReadOnly = true;
             // 
+            // DeposcoStatusTitle
+            // 
+            DeposcoStatusTitle.AutoSize = true;
+            DeposcoStatusTitle.Location = new Point(459, 3);
+            DeposcoStatusTitle.Name = "DeposcoStatusTitle";
+            DeposcoStatusTitle.Size = new Size(331, 15);
+            DeposcoStatusTitle.TabIndex = 2;
+            DeposcoStatusTitle.Text = "[DeposcoPrintClientx64.exe] Deposco - Print Client x64 Status:";
+            DeposcoStatusTitle.Visible = false;
+            // 
+            // DeposcoStatus
+            // 
+            DeposcoStatus.AutoSize = true;
+            DeposcoStatus.Location = new Point(796, 3);
+            DeposcoStatus.Name = "DeposcoStatus";
+            DeposcoStatus.Size = new Size(46, 15);
+            DeposcoStatus.TabIndex = 3;
+            DeposcoStatus.Text = "{status}";
+            DeposcoStatus.Visible = false;
+            // 
             // PrinterManagerApp
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(944, 601);
+            Controls.Add(DeposcoStatus);
+            Controls.Add(DeposcoStatusTitle);
             Controls.Add(printerDataGrid);
             Controls.Add(actionsGrp);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -224,5 +248,7 @@
         private DataGridViewTextBoxColumn driverNameCol;
         private Button openPrintQueueBtn;
         private Button propertiesButton;
+        private Label DeposcoStatusTitle;
+        private Label DeposcoStatus;
     }
 }
