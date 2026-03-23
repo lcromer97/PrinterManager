@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/lcromer97/PrinterManager</PackageProjectUrl>
     <RepositoryUrl>https://github.com/lcromer97/PrinterManager</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.1.1.0</Version>
+    <Version>2026.3.18</Version>
     <Description>All-in-one Printer Management Utility for limited Windows environments. Meant to be used with ScreenConnect's Backstage.</Description>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>

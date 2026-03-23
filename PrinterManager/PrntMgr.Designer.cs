@@ -224,12 +224,14 @@
             Controls.Add(printerDataGrid);
             Controls.Add(actionsGrp);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "PrinterManagerApp";
-            Text = "Printer Manager";
+            Text = "Printer Manager - v2026.3.18";
             actionsGrp.ResumeLayout(false);
             actionsGrp.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)printerDataGrid).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

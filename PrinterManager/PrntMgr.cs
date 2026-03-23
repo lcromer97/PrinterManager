@@ -80,7 +80,7 @@ public partial class PrinterManagerApp : Form {
                 string.IsNullOrWhiteSpace(printer.PortName))
                 continue;
 
-            var indexRow = PrinterDataGrid.Rows.Add(printer.IsDefault, printer.PortName, printer.DisplayName, printer.DriverName);
+            var indexRow = PrinterDataGrid.Rows.Add(printer.IsDefault, printer.PortName, printer.DisplayName ?? "{UNNAMED}", printer.DriverName ?? "{NULL_DATA}");
             PrinterDataGrid.Rows[indexRow].Tag = printer; // Store the PrinterInfo object in the row's Tag property for easy access later
         }
     }
@@ -236,7 +236,7 @@ public partial class PrinterManagerApp : Form {
 
         var args = $"/Xs /n \"{printerInfo.DisplayName}\" PortName \"{newPort}\"";
 
-        ProcessStartInfo psi = new ("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
+        ProcessStartInfo psi = new("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
             Verb = "runas",
             UseShellExecute = true,
             CreateNoWindow = true
@@ -266,7 +266,7 @@ public partial class PrinterManagerApp : Form {
 
         string args = $"/o /n \"{printerInfo.DisplayName}\"";
 
-        ProcessStartInfo psi = new ("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
+        ProcessStartInfo psi = new("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
             UseShellExecute = true
         };
 
@@ -299,14 +299,13 @@ public partial class PrinterManagerApp : Form {
 
         string args = $"/p /n \"{printerInfo.DisplayName}\"";
 
-        ProcessStartInfo psi = new ("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
+        ProcessStartInfo psi = new("rundll32.exe", $"printui.dll,PrintUIEntry {args}") {
             UseShellExecute = true,
             CreateNoWindow = true
         };
 
         Process.Start(psi);
     }
-}
 
     /// <summary>
     /// Determines whether the current machine is identified as the Deposco print server.
