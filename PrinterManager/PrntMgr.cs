@@ -75,9 +75,11 @@ public partial class PrinterManagerApp : Form {
 
         var printers = PrinterHelper.GetPrinters();
         foreach (var printer in printers) {
-            if (printer.PortName is "nul:" ||
+            if (string.IsNullOrWhiteSpace(printer.PortName) ||
+                printer.PortName is "nul:" ||
                 printer.PortName is "PORTPROMPT:" ||
-                string.IsNullOrWhiteSpace(printer.PortName))
+                printer.PortName is "FAX:" ||
+                (printer.PortName.StartsWith("TS") && IsDeposcoPrintServer()))
                 continue;
 
             var indexRow = PrinterDataGrid.Rows.Add(printer.IsDefault, printer.PortName, printer.DisplayName ?? "{UNNAMED}", printer.DriverName ?? "{NULL_DATA}");
